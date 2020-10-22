@@ -52,7 +52,6 @@ export default function CreatePrescription() {
   const [alert, setAlert] = useState(true);
   const [doctors, setDoctors] = useState<EntDoctor[]>([]);
   const [patients, setPatients] = useState<EntPatient[]>([]);
-  const [medicines, setMedicines] = useState<EntMedicine[]>([]);
   const [systemmembers, setSysemmembers] = useState<EntSystemmember[]>([]);
   const [prescription, setPrescriptions] = useState<EntPrescription[]>([]);
   const [mmedicines, setMmedicines] = useState<EntMedicine[]>([]);
@@ -83,12 +82,6 @@ export default function CreatePrescription() {
     };
     getPatients();
 
-    const getMedicines = async () => {
-      const res = await api.listMedicine({ limit: 10, offset: 0 });
-      setLoading(false);
-      setMedicines(res);
-    };
-    getMedicines();
 
     const getSystemmembers = async () => {
       const res = await api.listSystemmember({ limit: 10, offset: 0 });
@@ -107,9 +100,6 @@ export default function CreatePrescription() {
     setPatient(event.target.value as number);
   };
 
-  const MedicinehandleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setMedicine(event.target.value as number);
-  };
 
   const MmedicinehandleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setMmedicine(event.target.value as number);
@@ -128,7 +118,6 @@ export default function CreatePrescription() {
       doctor: doctorID,
       patient: patientID,
       systemmember: systemmemberID,
-      medicines: medicineID,
       mmedicine: mmedicineID,
       datetime: datetime + ":00+07:00",
 
