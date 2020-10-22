@@ -200,7 +200,7 @@ func (ctl *MmedicineController) UpdateMmedicine(c *gin.Context) {
 }
 
 // NewMmedicineController creates and registers handles for the mmedicine controller
-func NewPatiMmedicineController(router gin.IRouter, client *ent.Client) *MmedicineController {
+func NewMmedicineController(router gin.IRouter, client *ent.Client) *MmedicineController {
 	ptc := &MmedicineController{
 		client: client,
 		router: router,

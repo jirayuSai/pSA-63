@@ -182,7 +182,7 @@ func main() {
 	controllers.NewPatientController(v1, client)
 	controllers.NewPrescriptionController(v1, client)
 	controllers.NewSystemmemberController(v1, client)
-	controllers.NewPatiMmedicineController(v1, client)
+	controllers.NewMmedicineController(v1, client)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run()
