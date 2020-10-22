@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
 
-import { EntDoctor, EntMedicine, EntPatient, EntPrescription, EntSystemmember } from '../../api';
+import { EntDoctor, EntPatient, EntPrescription, EntSystemmember,EntMmedicine } from '../../api';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,13 +54,12 @@ export default function CreatePrescription() {
   const [patients, setPatients] = useState<EntPatient[]>([]);
   const [systemmembers, setSysemmembers] = useState<EntSystemmember[]>([]);
   const [prescription, setPrescriptions] = useState<EntPrescription[]>([]);
-  const [mmedicines, setMmedicines] = useState<EntMedicine[]>([]);
+  const [mmedicines, setMmedicines] = useState<EntMmedicine[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   const [doctorID, setDoctor] = useState(Number);
   const [patientID, setPatient] = useState(Number);
-  const [medicineID, setMedicine] = useState(Number);
   const [mmedicineID, setMmedicine] = useState(Number);
   const [systemmemberID, setSysemmember] = useState(Number);
   const [prescriptionID, setPrescription] = useState(Number);
@@ -89,6 +88,13 @@ export default function CreatePrescription() {
       setSysemmembers(res);
     };
     getSystemmembers();
+
+    const getMmedicines = async () => {
+      const res = await api.listMmedicine({ limit: 10, offset: 0 });
+      setLoading(false);
+      setMmedicines(res);
+    };
+    getMmedicines();
 
   }, [loading]);
 

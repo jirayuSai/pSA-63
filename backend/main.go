@@ -26,12 +26,7 @@ type Prescriptions struct {
 type Prescription struct {
 	PrescripID string
 }
-type Medicines struct {
-	Medicine []Medicine
-}
-type Medicine struct {
-	MedicineName string
-}
+
 type Patients struct {
 	Patient []Patient
 }
@@ -168,33 +163,10 @@ func main() {
 
 	}
 
-	//Set Medicine Data
-	medicines := Medicines{
-		Medicine: []Medicine{
-			Medicine{"M3"},
-			Medicine{"M2"},
-			Medicine{"M1"},
-			Medicine{"M4"},
-			Medicine{"M5"},
-			Medicine{"M6"},
-		},
-	}
-	for _, m := range medicines.Medicine {
-		client.Medicine.
-			Create().
-			SetMedicineName(m.MedicineName).
-			Save(context.Background())
-	}
-
 	//Set Systemmember Data
 	systemMembers := SystemMembers{
 		SystemMember: []SystemMember{
 			SystemMember{"Edwards", "12345678"},
-			SystemMember{"Johnson", "32424242"},
-			SystemMember{"Bobby Kim", "11111111"},
-			SystemMember{"Rogers", "22222222"},
-			SystemMember{"Williams", "33333333"},
-			SystemMember{"Wilson", "44444444"},
 		},
 	}
 	for _, sm := range systemMembers.SystemMember {
@@ -207,10 +179,10 @@ func main() {
 
 	v1 := router.Group("/api/v1")
 	controllers.NewDoctorController(v1, client)
-	controllers.NewMedicineController(v1, client)
 	controllers.NewPatientController(v1, client)
 	controllers.NewPrescriptionController(v1, client)
 	controllers.NewSystemmemberController(v1, client)
+	controllers.NewPatiMmedicineController(v1, client)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run()

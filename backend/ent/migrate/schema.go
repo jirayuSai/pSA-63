@@ -21,18 +21,6 @@ var (
 		PrimaryKey:  []*schema.Column{DoctorsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
-	// MedicinesColumns holds the columns for the "medicines" table.
-	MedicinesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "medicine_name", Type: field.TypeString},
-	}
-	// MedicinesTable holds the schema information for the "medicines" table.
-	MedicinesTable = &schema.Table{
-		Name:        "medicines",
-		Columns:     MedicinesColumns,
-		PrimaryKey:  []*schema.Column{MedicinesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
-	}
 	// MmedicinesColumns holds the columns for the "mmedicines" table.
 	MmedicinesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -120,7 +108,6 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DoctorsTable,
-		MedicinesTable,
 		MmedicinesTable,
 		PatientsTable,
 		PrescriptionsTable,

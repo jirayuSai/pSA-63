@@ -22,19 +22,6 @@ func (f DoctorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return f(ctx, mv)
 }
 
-// The MedicineFunc type is an adapter to allow the use of ordinary
-// function as Medicine mutator.
-type MedicineFunc func(context.Context, *ent.MedicineMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f MedicineFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.MedicineMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MedicineMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The MmedicineFunc type is an adapter to allow the use of ordinary
 // function as Mmedicine mutator.
 type MmedicineFunc func(context.Context, *ent.MmedicineMutation) (ent.Value, error)

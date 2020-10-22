@@ -4,7 +4,6 @@ package ent
 
 import (
 	"github.com/jirayuSai/app/ent/doctor"
-	"github.com/jirayuSai/app/ent/medicine"
 	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/schema"
@@ -21,12 +20,6 @@ func init() {
 	doctorDescDoctorName := doctorFields[0].Descriptor()
 	// doctor.DoctorNameValidator is a validator for the "Doctor_Name" field. It is called by the builders before save.
 	doctor.DoctorNameValidator = doctorDescDoctorName.Validators[0].(func(string) error)
-	medicineFields := schema.Medicine{}.Fields()
-	_ = medicineFields
-	// medicineDescMedicineName is the schema descriptor for Medicine_Name field.
-	medicineDescMedicineName := medicineFields[0].Descriptor()
-	// medicine.MedicineNameValidator is a validator for the "Medicine_Name" field. It is called by the builders before save.
-	medicine.MedicineNameValidator = medicineDescMedicineName.Validators[0].(func(string) error)
 	mmedicineFields := schema.Mmedicine{}.Fields()
 	_ = mmedicineFields
 	// mmedicineDescMmedicineName is the schema descriptor for Mmedicine_Name field.

@@ -1,7 +1,6 @@
 export * from './ControllersPrescription';
 export * from './EntDoctor';
 export * from './EntDoctorEdges';
-export * from './EntMedicine';
 export * from './EntMmedicine';
 export * from './EntMmedicineEdges';
 export * from './EntPatient';

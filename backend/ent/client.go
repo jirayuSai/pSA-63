@@ -10,7 +10,6 @@ import (
 	"github.com/jirayuSai/app/ent/migrate"
 
 	"github.com/jirayuSai/app/ent/doctor"
-	"github.com/jirayuSai/app/ent/medicine"
 	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/prescription"
@@ -28,8 +27,6 @@ type Client struct {
 	Schema *migrate.Schema
 	// Doctor is the client for interacting with the Doctor builders.
 	Doctor *DoctorClient
-	// Medicine is the client for interacting with the Medicine builders.
-	Medicine *MedicineClient
 	// Mmedicine is the client for interacting with the Mmedicine builders.
 	Mmedicine *MmedicineClient
 	// Patient is the client for interacting with the Patient builders.
@@ -52,7 +49,6 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Doctor = NewDoctorClient(c.config)
-	c.Medicine = NewMedicineClient(c.config)
 	c.Mmedicine = NewMmedicineClient(c.config)
 	c.Patient = NewPatientClient(c.config)
 	c.Prescription = NewPrescriptionClient(c.config)
@@ -90,7 +86,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:          ctx,
 		config:       cfg,
 		Doctor:       NewDoctorClient(cfg),
-		Medicine:     NewMedicineClient(cfg),
 		Mmedicine:    NewMmedicineClient(cfg),
 		Patient:      NewPatientClient(cfg),
 		Prescription: NewPrescriptionClient(cfg),
@@ -111,7 +106,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:       cfg,
 		Doctor:       NewDoctorClient(cfg),
-		Medicine:     NewMedicineClient(cfg),
 		Mmedicine:    NewMmedicineClient(cfg),
 		Patient:      NewPatientClient(cfg),
 		Prescription: NewPrescriptionClient(cfg),
@@ -145,7 +139,6 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Doctor.Use(hooks...)
-	c.Medicine.Use(hooks...)
 	c.Mmedicine.Use(hooks...)
 	c.Patient.Use(hooks...)
 	c.Prescription.Use(hooks...)
@@ -249,89 +242,6 @@ func (c *DoctorClient) QueryPrescriptions(d *Doctor) *PrescriptionQuery {
 // Hooks returns the client hooks.
 func (c *DoctorClient) Hooks() []Hook {
 	return c.hooks.Doctor
-}
-
-// MedicineClient is a client for the Medicine schema.
-type MedicineClient struct {
-	config
-}
-
-// NewMedicineClient returns a client for the Medicine from the given config.
-func NewMedicineClient(c config) *MedicineClient {
-	return &MedicineClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `medicine.Hooks(f(g(h())))`.
-func (c *MedicineClient) Use(hooks ...Hook) {
-	c.hooks.Medicine = append(c.hooks.Medicine, hooks...)
-}
-
-// Create returns a create builder for Medicine.
-func (c *MedicineClient) Create() *MedicineCreate {
-	mutation := newMedicineMutation(c.config, OpCreate)
-	return &MedicineCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Update returns an update builder for Medicine.
-func (c *MedicineClient) Update() *MedicineUpdate {
-	mutation := newMedicineMutation(c.config, OpUpdate)
-	return &MedicineUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *MedicineClient) UpdateOne(m *Medicine) *MedicineUpdateOne {
-	mutation := newMedicineMutation(c.config, OpUpdateOne, withMedicine(m))
-	return &MedicineUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *MedicineClient) UpdateOneID(id int) *MedicineUpdateOne {
-	mutation := newMedicineMutation(c.config, OpUpdateOne, withMedicineID(id))
-	return &MedicineUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Medicine.
-func (c *MedicineClient) Delete() *MedicineDelete {
-	mutation := newMedicineMutation(c.config, OpDelete)
-	return &MedicineDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *MedicineClient) DeleteOne(m *Medicine) *MedicineDeleteOne {
-	return c.DeleteOneID(m.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *MedicineClient) DeleteOneID(id int) *MedicineDeleteOne {
-	builder := c.Delete().Where(medicine.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &MedicineDeleteOne{builder}
-}
-
-// Create returns a query builder for Medicine.
-func (c *MedicineClient) Query() *MedicineQuery {
-	return &MedicineQuery{config: c.config}
-}
-
-// Get returns a Medicine entity by its id.
-func (c *MedicineClient) Get(ctx context.Context, id int) (*Medicine, error) {
-	return c.Query().Where(medicine.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *MedicineClient) GetX(ctx context.Context, id int) *Medicine {
-	m, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return m
-}
-
-// Hooks returns the client hooks.
-func (c *MedicineClient) Hooks() []Hook {
-	return c.hooks.Medicine
 }
 
 // MmedicineClient is a client for the Mmedicine schema.
