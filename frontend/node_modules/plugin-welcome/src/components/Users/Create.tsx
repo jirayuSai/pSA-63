@@ -55,12 +55,14 @@ export default function CreatePrescription() {
   const [medicines, setMedicines] = useState<EntMedicine[]>([]);
   const [systemmembers, setSysemmembers] = useState<EntSystemmember[]>([]);
   const [prescription, setPrescriptions] = useState<EntPrescription[]>([]);
+  const [mmedicines, setMmedicines] = useState<EntMedicine[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   const [doctorID, setDoctor] = useState(Number);
   const [patientID, setPatient] = useState(Number);
   const [medicineID, setMedicine] = useState(Number);
+  const [mmedicineID, setMmedicine] = useState(Number);
   const [systemmemberID, setSysemmember] = useState(Number);
   const [prescriptionID, setPrescription] = useState(Number);
   const [datetime, setDateTime] = useState(String);
@@ -109,6 +111,10 @@ export default function CreatePrescription() {
     setMedicine(event.target.value as number);
   };
 
+  const MmedicinehandleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setMmedicine(event.target.value as number);
+  };
+
   const SystemmemberhandleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSysemmember(event.target.value as number);
   };
@@ -122,6 +128,8 @@ export default function CreatePrescription() {
       doctor: doctorID,
       patient: patientID,
       systemmember: systemmemberID,
+      medicines: medicineID,
+      mmedicine: mmedicineID,
       datetime: datetime + ":00+07:00",
 
     };
@@ -139,10 +147,10 @@ export default function CreatePrescription() {
     <Page theme={pageTheme.home}>
       <Header
       title={`${profile.givenName || 'Prescription'}`}
-      subtitle="BLUE MOON DORMITORY"
+      subtitle="ใบบันทึกการจ่ายยา"
      ></Header>
       <Content>
-        <ContentHeader title="ADD DATA">
+        <ContentHeader title="กรุณากรอกข้อมูล">
           <div>
             <Link component={RouterLink} to="/">
             <Button variant="contained" color="primary" style={{backgroundColor: "#21b6ae"}}>
@@ -171,7 +179,7 @@ export default function CreatePrescription() {
                 variant="outlined"
               >
               <Typography variant="h6" gutterBottom  align="center">
-                Doctor Name : 
+                กรุณาเลือกชื่อแพทย์ : 
                 <Typography variant="body1" gutterBottom> 
                 <Select
                   labelId="doctor"
@@ -188,13 +196,14 @@ export default function CreatePrescription() {
                 </Typography>
               </FormControl>
 
+
             <div>
               <FormControl
                 className={classes.margin}
                 variant="outlined"
               >
                 <Typography variant="h6" gutterBottom  align="center">
-                Patient Name : 
+                กรุณาเลือกชื่อผู้ป่วย : 
                 <Typography variant="body1" gutterBottom> 
                 <Select
                   labelId="patient"
@@ -212,27 +221,32 @@ export default function CreatePrescription() {
               </FormControl>
             </div>
 
-            <FormControl
-              className={classes.margin}
-              variant="outlined"
-            >
-              <Typography variant="h6" gutterBottom  align="center">
-                Medicine ID : 
-                <Typography variant="body1" gutterBottom> 
-              <Select
-                labelId="medicine"
-                id="medicine"
-                value={medicineID}
-                onChange={MedicinehandleChange}
-                style={{ width: 400 }}
+            <div>
+              <FormControl
+                className={classes.margin}
+                variant="outlined"
               >
-                {medicines.map((item: EntMedicine) => (
+                <Typography variant="h6" gutterBottom  align="center">
+                กรุณาเลือกรหัสยา : 
+                <Typography variant="body1" gutterBottom> 
+                <Select
+                  labelId="mmedicine"
+                  id="mmedicine"
+                  value={mmedicineID}
+                  onChange={MmedicinehandleChange}
+                  style={{ width: 400 }}
+                >
+                {patients.map((item: any) => (
                   <MenuItem value={item.id}>{item.id}</MenuItem>
                 ))}
-              </Select>
+                </Select>
                 </Typography>
                 </Typography>
-            </FormControl>
+              </FormControl>
+            </div>
+
+
+
 
             <div>
               <FormControl
@@ -240,7 +254,7 @@ export default function CreatePrescription() {
                 variant="outlined"
               >
                 <Typography variant="h6" gutterBottom  align="center">
-                  Systemmember Name : 
+                  กรุณาเลือกชื่อเภสัชกร : 
                 <Typography variant="body1" gutterBottom> 
                 <Select
                    labelId="systemmember"
@@ -257,6 +271,7 @@ export default function CreatePrescription() {
                 </Typography>
               </FormControl>
             </div>
+            
             <tr>
             <td>
             <FormControl

@@ -258,6 +258,30 @@ func (f MedicineMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MedicineMutation", m)
 }
 
+// The MmedicineQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type MmedicineQueryRuleFunc func(context.Context, *ent.MmedicineQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f MmedicineQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MmedicineQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MmedicineQuery", q)
+}
+
+// The MmedicineMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type MmedicineMutationRuleFunc func(context.Context, *ent.MmedicineMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f MmedicineMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MmedicineMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MmedicineMutation", m)
+}
+
 // The PatientQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PatientQueryRuleFunc func(context.Context, *ent.PatientQuery) error

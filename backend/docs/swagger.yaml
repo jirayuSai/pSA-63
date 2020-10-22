@@ -6,6 +6,10 @@ definitions:
         type: string
       doctor:
         type: integer
+      medicine:
+        type: integer
+      mmedicine:
+        type: integer
       patient:
         type: integer
       systemmember:
@@ -42,17 +46,26 @@ definitions:
       Medicine_Name:
         description: MedicineName holds the value of the "Medicine_Name" field.
         type: string
+      id:
+        description: ID of the ent.
+        type: integer
+    type: object
+  ent.Mmedicine:
+    properties:
+      Mmedicine_Name:
+        description: MmedicineName holds the value of the "Mmedicine_Name" field.
+        type: string
       edges:
-        $ref: '#/definitions/ent.MedicineEdges'
+        $ref: '#/definitions/ent.MmedicineEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the MedicineQuery when eager-loading is set.
+          The values are being populated by the MmedicineQuery when eager-loading is set.
         type: object
       id:
         description: ID of the ent.
         type: integer
     type: object
-  ent.MedicineEdges:
+  ent.MmedicineEdges:
     properties:
       prescriptions:
         description: Prescriptions holds the value of the prescriptions edge.
@@ -105,6 +118,8 @@ definitions:
       id:
         description: ID of the ent.
         type: integer
+      mmedicine_ID:
+        type: integer
       patient_ID:
         type: integer
       systemmember_ID:
@@ -116,11 +131,10 @@ definitions:
         $ref: '#/definitions/ent.Doctor'
         description: Doctor holds the value of the doctor edge.
         type: object
-      medicines:
-        description: Medicines holds the value of the medicines edge.
-        items:
-          $ref: '#/definitions/ent.Medicine'
-        type: array
+      mmedicine:
+        $ref: '#/definitions/ent.Mmedicine'
+        description: Mmedicine holds the value of the mmedicine edge.
+        type: object
       patient:
         $ref: '#/definitions/ent.Patient'
         description: Patient holds the value of the patient edge.
@@ -475,6 +489,157 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       summary: Update a medicine entity by ID
+  /mmedicines:
+    get:
+      description: list mmedicine entities
+      operationId: list-mmedicine
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ent.Mmedicine'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: List mmedicine entities
+    post:
+      consumes:
+      - application/json
+      description: Create mmedicine
+      operationId: create-mmedicine
+      parameters:
+      - description: Mmedicine entity
+        in: body
+        name: mmedicine
+        required: true
+        schema:
+          $ref: '#/definitions/ent.Mmedicine'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ent.Mmedicine'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Create mmedicine
+  /mmedicines/{id}:
+    delete:
+      description: get mmedicine by ID
+      operationId: delete-mmedicine
+      parameters:
+      - description: Mmedicine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Delete a mmedicine entity by ID
+    get:
+      description: get mmedicine by ID
+      operationId: get-mmedicine
+      parameters:
+      - description: Mmedicine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ent.Mmedicine'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Get a mmedicine entity by ID
+    put:
+      consumes:
+      - application/json
+      description: update mmedicine by ID
+      operationId: update-mmedicine
+      parameters:
+      - description: Mmedicine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Mmedicine entity
+        in: body
+        name: mmedicine
+        required: true
+        schema:
+          $ref: '#/definitions/ent.Mmedicine'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ent.Mmedicine'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Update a mmedicine entity by ID
   /patients:
     get:
       description: list patient entities

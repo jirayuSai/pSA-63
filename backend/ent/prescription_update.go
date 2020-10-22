@@ -11,7 +11,7 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/doctor"
-	"github.com/jirayuSai/app/ent/medicine"
+	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/predicate"
 	"github.com/jirayuSai/app/ent/prescription"
@@ -95,19 +95,23 @@ func (pu *PrescriptionUpdate) SetSystemmember(s *Systemmember) *PrescriptionUpda
 	return pu.SetSystemmemberID(s.ID)
 }
 
-// AddMedicineIDs adds the medicines edge to Medicine by ids.
-func (pu *PrescriptionUpdate) AddMedicineIDs(ids ...int) *PrescriptionUpdate {
-	pu.mutation.AddMedicineIDs(ids...)
+// SetMmedicineID sets the mmedicine edge to Mmedicine by id.
+func (pu *PrescriptionUpdate) SetMmedicineID(id int) *PrescriptionUpdate {
+	pu.mutation.SetMmedicineID(id)
 	return pu
 }
 
-// AddMedicines adds the medicines edges to Medicine.
-func (pu *PrescriptionUpdate) AddMedicines(m ...*Medicine) *PrescriptionUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetNillableMmedicineID sets the mmedicine edge to Mmedicine by id if the given value is not nil.
+func (pu *PrescriptionUpdate) SetNillableMmedicineID(id *int) *PrescriptionUpdate {
+	if id != nil {
+		pu = pu.SetMmedicineID(*id)
 	}
-	return pu.AddMedicineIDs(ids...)
+	return pu
+}
+
+// SetMmedicine sets the mmedicine edge to Mmedicine.
+func (pu *PrescriptionUpdate) SetMmedicine(m *Mmedicine) *PrescriptionUpdate {
+	return pu.SetMmedicineID(m.ID)
 }
 
 // Mutation returns the PrescriptionMutation object of the builder.
@@ -133,19 +137,10 @@ func (pu *PrescriptionUpdate) ClearSystemmember() *PrescriptionUpdate {
 	return pu
 }
 
-// RemoveMedicineIDs removes the medicines edge to Medicine by ids.
-func (pu *PrescriptionUpdate) RemoveMedicineIDs(ids ...int) *PrescriptionUpdate {
-	pu.mutation.RemoveMedicineIDs(ids...)
+// ClearMmedicine clears the mmedicine edge to Mmedicine.
+func (pu *PrescriptionUpdate) ClearMmedicine() *PrescriptionUpdate {
+	pu.mutation.ClearMmedicine()
 	return pu
-}
-
-// RemoveMedicines removes medicines edges to Medicine.
-func (pu *PrescriptionUpdate) RemoveMedicines(m ...*Medicine) *PrescriptionUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return pu.RemoveMedicineIDs(ids...)
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
@@ -330,36 +325,33 @@ func (pu *PrescriptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if nodes := pu.mutation.RemovedMedicinesIDs(); len(nodes) > 0 {
+	if pu.mutation.MmedicineCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   prescription.MedicinesTable,
-			Columns: prescription.MedicinesPrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   prescription.MmedicineTable,
+			Columns: []string{prescription.MmedicineColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: medicine.FieldID,
+					Column: mmedicine.FieldID,
 				},
 			},
 		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.MedicinesIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.MmedicineIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   prescription.MedicinesTable,
-			Columns: prescription.MedicinesPrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   prescription.MmedicineTable,
+			Columns: []string{prescription.MmedicineColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: medicine.FieldID,
+					Column: mmedicine.FieldID,
 				},
 			},
 		}
@@ -449,19 +441,23 @@ func (puo *PrescriptionUpdateOne) SetSystemmember(s *Systemmember) *Prescription
 	return puo.SetSystemmemberID(s.ID)
 }
 
-// AddMedicineIDs adds the medicines edge to Medicine by ids.
-func (puo *PrescriptionUpdateOne) AddMedicineIDs(ids ...int) *PrescriptionUpdateOne {
-	puo.mutation.AddMedicineIDs(ids...)
+// SetMmedicineID sets the mmedicine edge to Mmedicine by id.
+func (puo *PrescriptionUpdateOne) SetMmedicineID(id int) *PrescriptionUpdateOne {
+	puo.mutation.SetMmedicineID(id)
 	return puo
 }
 
-// AddMedicines adds the medicines edges to Medicine.
-func (puo *PrescriptionUpdateOne) AddMedicines(m ...*Medicine) *PrescriptionUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetNillableMmedicineID sets the mmedicine edge to Mmedicine by id if the given value is not nil.
+func (puo *PrescriptionUpdateOne) SetNillableMmedicineID(id *int) *PrescriptionUpdateOne {
+	if id != nil {
+		puo = puo.SetMmedicineID(*id)
 	}
-	return puo.AddMedicineIDs(ids...)
+	return puo
+}
+
+// SetMmedicine sets the mmedicine edge to Mmedicine.
+func (puo *PrescriptionUpdateOne) SetMmedicine(m *Mmedicine) *PrescriptionUpdateOne {
+	return puo.SetMmedicineID(m.ID)
 }
 
 // Mutation returns the PrescriptionMutation object of the builder.
@@ -487,19 +483,10 @@ func (puo *PrescriptionUpdateOne) ClearSystemmember() *PrescriptionUpdateOne {
 	return puo
 }
 
-// RemoveMedicineIDs removes the medicines edge to Medicine by ids.
-func (puo *PrescriptionUpdateOne) RemoveMedicineIDs(ids ...int) *PrescriptionUpdateOne {
-	puo.mutation.RemoveMedicineIDs(ids...)
+// ClearMmedicine clears the mmedicine edge to Mmedicine.
+func (puo *PrescriptionUpdateOne) ClearMmedicine() *PrescriptionUpdateOne {
+	puo.mutation.ClearMmedicine()
 	return puo
-}
-
-// RemoveMedicines removes medicines edges to Medicine.
-func (puo *PrescriptionUpdateOne) RemoveMedicines(m ...*Medicine) *PrescriptionUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return puo.RemoveMedicineIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -682,36 +669,33 @@ func (puo *PrescriptionUpdateOne) sqlSave(ctx context.Context) (pr *Prescription
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if nodes := puo.mutation.RemovedMedicinesIDs(); len(nodes) > 0 {
+	if puo.mutation.MmedicineCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   prescription.MedicinesTable,
-			Columns: prescription.MedicinesPrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   prescription.MmedicineTable,
+			Columns: []string{prescription.MmedicineColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: medicine.FieldID,
+					Column: mmedicine.FieldID,
 				},
 			},
 		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.MedicinesIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.MmedicineIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   prescription.MedicinesTable,
-			Columns: prescription.MedicinesPrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   prescription.MmedicineTable,
+			Columns: []string{prescription.MmedicineColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: medicine.FieldID,
+					Column: mmedicine.FieldID,
 				},
 			},
 		}

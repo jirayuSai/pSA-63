@@ -260,25 +260,25 @@ func HasSystemmemberWith(preds ...predicate.Systemmember) predicate.Prescription
 	})
 }
 
-// HasMedicines applies the HasEdge predicate on the "medicines" edge.
-func HasMedicines() predicate.Prescription {
+// HasMmedicine applies the HasEdge predicate on the "mmedicine" edge.
+func HasMmedicine() predicate.Prescription {
 	return predicate.Prescription(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(MedicinesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, MedicinesTable, MedicinesPrimaryKey...),
+			sqlgraph.To(MmedicineTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, MmedicineTable, MmedicineColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMedicinesWith applies the HasEdge predicate on the "medicines" edge with a given conditions (other predicates).
-func HasMedicinesWith(preds ...predicate.Medicine) predicate.Prescription {
+// HasMmedicineWith applies the HasEdge predicate on the "mmedicine" edge with a given conditions (other predicates).
+func HasMmedicineWith(preds ...predicate.Mmedicine) predicate.Prescription {
 	return predicate.Prescription(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(MedicinesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, MedicinesTable, MedicinesPrimaryKey...),
+			sqlgraph.To(MmedicineInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, MmedicineTable, MmedicineColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

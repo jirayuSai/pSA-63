@@ -6,13 +6,15 @@ import (
 	"strconv"
 	"time"
 
+	//"github.com/jirayuSai/app/ent/medicine"
+
+	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/systemmember"
 
-	"github.com/jirayuSai/app/ent/doctor"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jirayuSai/app/ent"
+	"github.com/jirayuSai/app/ent/doctor"
 	"github.com/jirayuSai/app/ent/prescription"
 )
 
@@ -26,6 +28,8 @@ type Prescription struct {
 	Patient      int
 	Systemmember int
 	Datetime     string
+	Medicine     int
+	Mmedicine    int
 }
 
 // CreatePrescription handles POST requests for adding prescription entities
@@ -59,6 +63,17 @@ func (ctl *PrescriptionController) CreatePrescription(c *gin.Context) {
 		return
 	}
 
+	me, err := ctl.client.Mmedicine.
+		Query().
+		Where(mmedicine.IDEQ(int(obj.Mmedicine))).
+		Only(context.Background())
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "mmedicine not found",
+		})
+		return
+	}
+
 	pt, err := ctl.client.Patient.
 		Query().
 		Where(patient.IDEQ(int(obj.Patient))).
@@ -69,17 +84,6 @@ func (ctl *PrescriptionController) CreatePrescription(c *gin.Context) {
 		})
 		return
 	}
-
-	//	m, err := ctl.client.Medicine.
-	//Query().
-	//	Where(medicine.IDEQ(int(obj.Medicine))).
-	//	Only(context.Background())
-	//if err != nil {
-	//	c.JSON(400, gin.H{
-	//		"error": "medicine not found",
-	//	})
-	//	return
-	//}
 
 	sm, err := ctl.client.Systemmember.
 		Query().
@@ -97,6 +101,7 @@ func (ctl *PrescriptionController) CreatePrescription(c *gin.Context) {
 	p, err := ctl.client.Prescription.
 		Create().
 		SetDoctor(d).
+		SetMmedicine(me).
 		SetPatient(pt).
 		SetSystemmember(sm).
 		SetDatetime(times).
@@ -181,7 +186,7 @@ func (ctl *PrescriptionController) ListPrescription(c *gin.Context) {
 	prescriptions, err := ctl.client.Prescription.
 		Query().
 		WithDoctor().
-		WithMedicines().
+		WithMmedicine().
 		WithPatient().
 		WithSystemmember().
 		Limit(limit).

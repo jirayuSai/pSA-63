@@ -12,6 +12,9 @@ type Doctor func(*sql.Selector)
 // Medicine is the predicate function for medicine builders.
 type Medicine func(*sql.Selector)
 
+// Mmedicine is the predicate function for mmedicine builders.
+type Mmedicine func(*sql.Selector)
+
 // Patient is the predicate function for patient builders.
 type Patient func(*sql.Selector)
 

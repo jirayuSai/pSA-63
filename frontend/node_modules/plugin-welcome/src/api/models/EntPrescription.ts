@@ -55,6 +55,12 @@ export interface EntPrescription {
      * @type {number}
      * @memberof EntPrescription
      */
+    mmedicineID?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof EntPrescription
+     */
     patientID?: number;
     /**
      * 
@@ -78,6 +84,7 @@ export function EntPrescriptionFromJSONTyped(json: any, ignoreDiscriminator: boo
         'doctorID': !exists(json, 'doctor_ID') ? undefined : json['doctor_ID'],
         'edges': !exists(json, 'edges') ? undefined : EntPrescriptionEdgesFromJSON(json['edges']),
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'mmedicineID': !exists(json, 'mmedicine_ID') ? undefined : json['mmedicine_ID'],
         'patientID': !exists(json, 'patient_ID') ? undefined : json['patient_ID'],
         'systemmemberID': !exists(json, 'systemmember_ID') ? undefined : json['systemmember_ID'],
     };
@@ -96,6 +103,7 @@ export function EntPrescriptionToJSON(value?: EntPrescription | null): any {
         'doctor_ID': value.doctorID,
         'edges': EntPrescriptionEdgesToJSON(value.edges),
         'id': value.id,
+        'mmedicine_ID': value.mmedicineID,
         'patient_ID': value.patientID,
         'systemmember_ID': value.systemmemberID,
     };

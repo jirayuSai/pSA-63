@@ -11,7 +11,6 @@ import (
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/medicine"
 	"github.com/jirayuSai/app/ent/predicate"
-	"github.com/jirayuSai/app/ent/prescription"
 )
 
 // MedicineUpdate is the builder for updating Medicine entities.
@@ -34,39 +33,9 @@ func (mu *MedicineUpdate) SetMedicineName(s string) *MedicineUpdate {
 	return mu
 }
 
-// AddPrescriptionIDs adds the prescriptions edge to Prescription by ids.
-func (mu *MedicineUpdate) AddPrescriptionIDs(ids ...int) *MedicineUpdate {
-	mu.mutation.AddPrescriptionIDs(ids...)
-	return mu
-}
-
-// AddPrescriptions adds the prescriptions edges to Prescription.
-func (mu *MedicineUpdate) AddPrescriptions(p ...*Prescription) *MedicineUpdate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return mu.AddPrescriptionIDs(ids...)
-}
-
 // Mutation returns the MedicineMutation object of the builder.
 func (mu *MedicineUpdate) Mutation() *MedicineMutation {
 	return mu.mutation
-}
-
-// RemovePrescriptionIDs removes the prescriptions edge to Prescription by ids.
-func (mu *MedicineUpdate) RemovePrescriptionIDs(ids ...int) *MedicineUpdate {
-	mu.mutation.RemovePrescriptionIDs(ids...)
-	return mu
-}
-
-// RemovePrescriptions removes prescriptions edges to Prescription.
-func (mu *MedicineUpdate) RemovePrescriptions(p ...*Prescription) *MedicineUpdate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return mu.RemovePrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
@@ -76,7 +45,6 @@ func (mu *MedicineUpdate) Save(ctx context.Context) (int, error) {
 			return 0, &ValidationError{Name: "Medicine_Name", err: fmt.Errorf("ent: validator failed for field \"Medicine_Name\": %w", err)}
 		}
 	}
-
 	var (
 		err      error
 		affected int
@@ -151,44 +119,6 @@ func (mu *MedicineUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: medicine.FieldMedicineName,
 		})
 	}
-	if nodes := mu.mutation.RemovedPrescriptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   medicine.PrescriptionsTable,
-			Columns: medicine.PrescriptionsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prescription.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mu.mutation.PrescriptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   medicine.PrescriptionsTable,
-			Columns: medicine.PrescriptionsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prescription.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{medicine.Label}
@@ -213,39 +143,9 @@ func (muo *MedicineUpdateOne) SetMedicineName(s string) *MedicineUpdateOne {
 	return muo
 }
 
-// AddPrescriptionIDs adds the prescriptions edge to Prescription by ids.
-func (muo *MedicineUpdateOne) AddPrescriptionIDs(ids ...int) *MedicineUpdateOne {
-	muo.mutation.AddPrescriptionIDs(ids...)
-	return muo
-}
-
-// AddPrescriptions adds the prescriptions edges to Prescription.
-func (muo *MedicineUpdateOne) AddPrescriptions(p ...*Prescription) *MedicineUpdateOne {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return muo.AddPrescriptionIDs(ids...)
-}
-
 // Mutation returns the MedicineMutation object of the builder.
 func (muo *MedicineUpdateOne) Mutation() *MedicineMutation {
 	return muo.mutation
-}
-
-// RemovePrescriptionIDs removes the prescriptions edge to Prescription by ids.
-func (muo *MedicineUpdateOne) RemovePrescriptionIDs(ids ...int) *MedicineUpdateOne {
-	muo.mutation.RemovePrescriptionIDs(ids...)
-	return muo
-}
-
-// RemovePrescriptions removes prescriptions edges to Prescription.
-func (muo *MedicineUpdateOne) RemovePrescriptions(p ...*Prescription) *MedicineUpdateOne {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return muo.RemovePrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -255,7 +155,6 @@ func (muo *MedicineUpdateOne) Save(ctx context.Context) (*Medicine, error) {
 			return nil, &ValidationError{Name: "Medicine_Name", err: fmt.Errorf("ent: validator failed for field \"Medicine_Name\": %w", err)}
 		}
 	}
-
 	var (
 		err  error
 		node *Medicine
@@ -327,44 +226,6 @@ func (muo *MedicineUpdateOne) sqlSave(ctx context.Context) (m *Medicine, err err
 			Value:  value,
 			Column: medicine.FieldMedicineName,
 		})
-	}
-	if nodes := muo.mutation.RemovedPrescriptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   medicine.PrescriptionsTable,
-			Columns: medicine.PrescriptionsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prescription.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := muo.mutation.PrescriptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   medicine.PrescriptionsTable,
-			Columns: medicine.PrescriptionsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prescription.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	m = &Medicine{config: muo.config}
 	_spec.Assign = m.assignValues

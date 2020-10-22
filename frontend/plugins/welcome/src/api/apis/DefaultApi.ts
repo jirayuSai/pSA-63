@@ -24,6 +24,9 @@ import {
     EntMedicine,
     EntMedicineFromJSON,
     EntMedicineToJSON,
+    EntMmedicine,
+    EntMmedicineFromJSON,
+    EntMmedicineToJSON,
     EntPatient,
     EntPatientFromJSON,
     EntPatientToJSON,
@@ -43,6 +46,10 @@ export interface CreateMedicineRequest {
     medicine: EntMedicine;
 }
 
+export interface CreateMmedicineRequest {
+    mmedicine: EntMmedicine;
+}
+
 export interface CreatePatientRequest {
     patient: EntPatient;
 }
@@ -60,6 +67,10 @@ export interface DeleteDoctorRequest {
 }
 
 export interface DeleteMedicineRequest {
+    id: number;
+}
+
+export interface DeleteMmedicineRequest {
     id: number;
 }
 
@@ -83,6 +94,10 @@ export interface GetMedicineRequest {
     id: number;
 }
 
+export interface GetMmedicineRequest {
+    id: number;
+}
+
 export interface GetPatientRequest {
     id: number;
 }
@@ -101,6 +116,11 @@ export interface ListDoctorRequest {
 }
 
 export interface ListMedicineRequest {
+    limit?: number;
+    offset?: number;
+}
+
+export interface ListMmedicineRequest {
     limit?: number;
     offset?: number;
 }
@@ -128,6 +148,11 @@ export interface UpdateDoctorRequest {
 export interface UpdateMedicineRequest {
     id: number;
     medicine: EntMedicine;
+}
+
+export interface UpdateMmedicineRequest {
+    id: number;
+    mmedicine: EntMmedicine;
 }
 
 export interface UpdatePatientRequest {
@@ -217,6 +242,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async createMedicine(requestParameters: CreateMedicineRequest): Promise<EntMedicine> {
         const response = await this.createMedicineRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * Create mmedicine
+     * Create mmedicine
+     */
+    async createMmedicineRaw(requestParameters: CreateMmedicineRequest): Promise<runtime.ApiResponse<EntMmedicine>> {
+        if (requestParameters.mmedicine === null || requestParameters.mmedicine === undefined) {
+            throw new runtime.RequiredError('mmedicine','Required parameter requestParameters.mmedicine was null or undefined when calling createMmedicine.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/mmedicines`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EntMmedicineToJSON(requestParameters.mmedicine),
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntMmedicineFromJSON(jsonValue));
+    }
+
+    /**
+     * Create mmedicine
+     * Create mmedicine
+     */
+    async createMmedicine(requestParameters: CreateMmedicineRequest): Promise<EntMmedicine> {
+        const response = await this.createMmedicineRaw(requestParameters);
         return await response.value();
     }
 
@@ -390,6 +450,38 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * get mmedicine by ID
+     * Delete a mmedicine entity by ID
+     */
+    async deleteMmedicineRaw(requestParameters: DeleteMmedicineRequest): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling deleteMmedicine.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/mmedicines/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * get mmedicine by ID
+     * Delete a mmedicine entity by ID
+     */
+    async deleteMmedicine(requestParameters: DeleteMmedicineRequest): Promise<object> {
+        const response = await this.deleteMmedicineRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
      * get patient by ID
      * Delete a patient entity by ID
      */
@@ -546,6 +638,38 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async getMedicine(requestParameters: GetMedicineRequest): Promise<EntMedicine> {
         const response = await this.getMedicineRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * get mmedicine by ID
+     * Get a mmedicine entity by ID
+     */
+    async getMmedicineRaw(requestParameters: GetMmedicineRequest): Promise<runtime.ApiResponse<EntMmedicine>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getMmedicine.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/mmedicines/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntMmedicineFromJSON(jsonValue));
+    }
+
+    /**
+     * get mmedicine by ID
+     * Get a mmedicine entity by ID
+     */
+    async getMmedicine(requestParameters: GetMmedicineRequest): Promise<EntMmedicine> {
+        const response = await this.getMmedicineRaw(requestParameters);
         return await response.value();
     }
 
@@ -714,6 +838,42 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async listMedicine(requestParameters: ListMedicineRequest): Promise<Array<EntMedicine>> {
         const response = await this.listMedicineRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * list mmedicine entities
+     * List mmedicine entities
+     */
+    async listMmedicineRaw(requestParameters: ListMmedicineRequest): Promise<runtime.ApiResponse<Array<EntMmedicine>>> {
+        const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/mmedicines`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(EntMmedicineFromJSON));
+    }
+
+    /**
+     * list mmedicine entities
+     * List mmedicine entities
+     */
+    async listMmedicine(requestParameters: ListMmedicineRequest): Promise<Array<EntMmedicine>> {
+        const response = await this.listMmedicineRaw(requestParameters);
         return await response.value();
     }
 
@@ -900,6 +1060,45 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updateMedicine(requestParameters: UpdateMedicineRequest): Promise<EntMedicine> {
         const response = await this.updateMedicineRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * update mmedicine by ID
+     * Update a mmedicine entity by ID
+     */
+    async updateMmedicineRaw(requestParameters: UpdateMmedicineRequest): Promise<runtime.ApiResponse<EntMmedicine>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling updateMmedicine.');
+        }
+
+        if (requestParameters.mmedicine === null || requestParameters.mmedicine === undefined) {
+            throw new runtime.RequiredError('mmedicine','Required parameter requestParameters.mmedicine was null or undefined when calling updateMmedicine.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/mmedicines/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EntMmedicineToJSON(requestParameters.mmedicine),
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntMmedicineFromJSON(jsonValue));
+    }
+
+    /**
+     * update mmedicine by ID
+     * Update a mmedicine entity by ID
+     */
+    async updateMmedicine(requestParameters: UpdateMmedicineRequest): Promise<EntMmedicine> {
+        const response = await this.updateMmedicineRaw(requestParameters);
         return await response.value();
     }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/jirayuSai/app/ent/doctor"
+	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/prescription"
 	"github.com/jirayuSai/app/ent/systemmember"
@@ -25,6 +26,7 @@ type Prescription struct {
 	// The values are being populated by the PrescriptionQuery when eager-loading is set.
 	Edges           PrescriptionEdges `json:"edges"`
 	Doctor_ID       *int
+	Mmedicine_ID    *int
 	Patient_ID      *int
 	Systemmember_ID *int
 }
@@ -37,8 +39,8 @@ type PrescriptionEdges struct {
 	Doctor *Doctor
 	// Systemmember holds the value of the systemmember edge.
 	Systemmember *Systemmember
-	// Medicines holds the value of the medicines edge.
-	Medicines []*Medicine
+	// Mmedicine holds the value of the mmedicine edge.
+	Mmedicine *Mmedicine
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -86,13 +88,18 @@ func (e PrescriptionEdges) SystemmemberOrErr() (*Systemmember, error) {
 	return nil, &NotLoadedError{edge: "systemmember"}
 }
 
-// MedicinesOrErr returns the Medicines value or an error if the edge
-// was not loaded in eager-loading.
-func (e PrescriptionEdges) MedicinesOrErr() ([]*Medicine, error) {
+// MmedicineOrErr returns the Mmedicine value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PrescriptionEdges) MmedicineOrErr() (*Mmedicine, error) {
 	if e.loadedTypes[3] {
-		return e.Medicines, nil
+		if e.Mmedicine == nil {
+			// The edge mmedicine was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: mmedicine.Label}
+		}
+		return e.Mmedicine, nil
 	}
-	return nil, &NotLoadedError{edge: "medicines"}
+	return nil, &NotLoadedError{edge: "mmedicine"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -107,6 +114,7 @@ func (*Prescription) scanValues() []interface{} {
 func (*Prescription) fkValues() []interface{} {
 	return []interface{}{
 		&sql.NullInt64{}, // Doctor_ID
+		&sql.NullInt64{}, // Mmedicine_ID
 		&sql.NullInt64{}, // Patient_ID
 		&sql.NullInt64{}, // Systemmember_ID
 	}
@@ -138,12 +146,18 @@ func (pr *Prescription) assignValues(values ...interface{}) error {
 			*pr.Doctor_ID = int(value.Int64)
 		}
 		if value, ok := values[1].(*sql.NullInt64); !ok {
+			return fmt.Errorf("unexpected type %T for edge-field Mmedicine_ID", value)
+		} else if value.Valid {
+			pr.Mmedicine_ID = new(int)
+			*pr.Mmedicine_ID = int(value.Int64)
+		}
+		if value, ok := values[2].(*sql.NullInt64); !ok {
 			return fmt.Errorf("unexpected type %T for edge-field Patient_ID", value)
 		} else if value.Valid {
 			pr.Patient_ID = new(int)
 			*pr.Patient_ID = int(value.Int64)
 		}
-		if value, ok := values[2].(*sql.NullInt64); !ok {
+		if value, ok := values[3].(*sql.NullInt64); !ok {
 			return fmt.Errorf("unexpected type %T for edge-field Systemmember_ID", value)
 		} else if value.Valid {
 			pr.Systemmember_ID = new(int)
@@ -168,9 +182,9 @@ func (pr *Prescription) QuerySystemmember() *SystemmemberQuery {
 	return (&PrescriptionClient{config: pr.config}).QuerySystemmember(pr)
 }
 
-// QueryMedicines queries the medicines edge of the Prescription.
-func (pr *Prescription) QueryMedicines() *MedicineQuery {
-	return (&PrescriptionClient{config: pr.config}).QueryMedicines(pr)
+// QueryMmedicine queries the mmedicine edge of the Prescription.
+func (pr *Prescription) QueryMmedicine() *MmedicineQuery {
+	return (&PrescriptionClient{config: pr.config}).QueryMmedicine(pr)
 }
 
 // Update returns a builder for updating this Prescription.

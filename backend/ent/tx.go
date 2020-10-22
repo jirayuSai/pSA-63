@@ -16,6 +16,8 @@ type Tx struct {
 	Doctor *DoctorClient
 	// Medicine is the client for interacting with the Medicine builders.
 	Medicine *MedicineClient
+	// Mmedicine is the client for interacting with the Mmedicine builders.
+	Mmedicine *MmedicineClient
 	// Patient is the client for interacting with the Patient builders.
 	Patient *PatientClient
 	// Prescription is the client for interacting with the Prescription builders.
@@ -159,6 +161,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Doctor = NewDoctorClient(tx.config)
 	tx.Medicine = NewMedicineClient(tx.config)
+	tx.Mmedicine = NewMmedicineClient(tx.config)
 	tx.Patient = NewPatientClient(tx.config)
 	tx.Prescription = NewPrescriptionClient(tx.config)
 	tx.Systemmember = NewSystemmemberClient(tx.config)

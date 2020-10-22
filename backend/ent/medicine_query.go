@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -14,7 +13,6 @@ import (
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/medicine"
 	"github.com/jirayuSai/app/ent/predicate"
-	"github.com/jirayuSai/app/ent/prescription"
 )
 
 // MedicineQuery is the builder for querying Medicine entities.
@@ -25,8 +23,6 @@ type MedicineQuery struct {
 	order      []OrderFunc
 	unique     []string
 	predicates []predicate.Medicine
-	// eager-loading edges.
-	withPrescriptions *PrescriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -54,24 +50,6 @@ func (mq *MedicineQuery) Offset(offset int) *MedicineQuery {
 func (mq *MedicineQuery) Order(o ...OrderFunc) *MedicineQuery {
 	mq.order = append(mq.order, o...)
 	return mq
-}
-
-// QueryPrescriptions chains the current query on the prescriptions edge.
-func (mq *MedicineQuery) QueryPrescriptions() *PrescriptionQuery {
-	query := &PrescriptionQuery{config: mq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := mq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(medicine.Table, medicine.FieldID, mq.sqlQuery()),
-			sqlgraph.To(prescription.Table, prescription.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, medicine.PrescriptionsTable, medicine.PrescriptionsPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first Medicine entity in the query. Returns *NotFoundError when no medicine was found.
@@ -253,17 +231,6 @@ func (mq *MedicineQuery) Clone() *MedicineQuery {
 	}
 }
 
-//  WithPrescriptions tells the query-builder to eager-loads the nodes that are connected to
-// the "prescriptions" edge. The optional arguments used to configure the query builder of the edge.
-func (mq *MedicineQuery) WithPrescriptions(opts ...func(*PrescriptionQuery)) *MedicineQuery {
-	query := &PrescriptionQuery{config: mq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	mq.withPrescriptions = query
-	return mq
-}
-
 // GroupBy used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -328,11 +295,8 @@ func (mq *MedicineQuery) prepareQuery(ctx context.Context) error {
 
 func (mq *MedicineQuery) sqlAll(ctx context.Context) ([]*Medicine, error) {
 	var (
-		nodes       = []*Medicine{}
-		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
-			mq.withPrescriptions != nil,
-		}
+		nodes = []*Medicine{}
+		_spec = mq.querySpec()
 	)
 	_spec.ScanValues = func() []interface{} {
 		node := &Medicine{config: mq.config}
@@ -345,7 +309,6 @@ func (mq *MedicineQuery) sqlAll(ctx context.Context) ([]*Medicine, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(values...)
 	}
 	if err := sqlgraph.QueryNodes(ctx, mq.driver, _spec); err != nil {
@@ -354,70 +317,6 @@ func (mq *MedicineQuery) sqlAll(ctx context.Context) ([]*Medicine, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-
-	if query := mq.withPrescriptions; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		ids := make(map[int]*Medicine, len(nodes))
-		for _, node := range nodes {
-			ids[node.ID] = node
-			fks = append(fks, node.ID)
-		}
-		var (
-			edgeids []int
-			edges   = make(map[int][]*Medicine)
-		)
-		_spec := &sqlgraph.EdgeQuerySpec{
-			Edge: &sqlgraph.EdgeSpec{
-				Inverse: true,
-				Table:   medicine.PrescriptionsTable,
-				Columns: medicine.PrescriptionsPrimaryKey,
-			},
-			Predicate: func(s *sql.Selector) {
-				s.Where(sql.InValues(medicine.PrescriptionsPrimaryKey[1], fks...))
-			},
-
-			ScanValues: func() [2]interface{} {
-				return [2]interface{}{&sql.NullInt64{}, &sql.NullInt64{}}
-			},
-			Assign: func(out, in interface{}) error {
-				eout, ok := out.(*sql.NullInt64)
-				if !ok || eout == nil {
-					return fmt.Errorf("unexpected id value for edge-out")
-				}
-				ein, ok := in.(*sql.NullInt64)
-				if !ok || ein == nil {
-					return fmt.Errorf("unexpected id value for edge-in")
-				}
-				outValue := int(eout.Int64)
-				inValue := int(ein.Int64)
-				node, ok := ids[outValue]
-				if !ok {
-					return fmt.Errorf("unexpected node id in edges: %v", outValue)
-				}
-				edgeids = append(edgeids, inValue)
-				edges[inValue] = append(edges[inValue], node)
-				return nil
-			},
-		}
-		if err := sqlgraph.QueryEdges(ctx, mq.driver, _spec); err != nil {
-			return nil, fmt.Errorf(`query edges "prescriptions": %v`, err)
-		}
-		query.Where(prescription.IDIn(edgeids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := edges[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected "prescriptions" node returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Prescriptions = append(nodes[i].Edges.Prescriptions, n)
-			}
-		}
-	}
-
 	return nodes, nil
 }
 

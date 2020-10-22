@@ -485,6 +485,232 @@ var doc = `{
                 }
             }
         },
+        "/mmedicines": {
+            "get": {
+                "description": "list mmedicine entities",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "List mmedicine entities",
+                "operationId": "list-mmedicine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ent.Mmedicine"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create mmedicine",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create mmedicine",
+                "operationId": "create-mmedicine",
+                "parameters": [
+                    {
+                        "description": "Mmedicine entity",
+                        "name": "mmedicine",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ent.Mmedicine"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Mmedicine"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/mmedicines/{id}": {
+            "get": {
+                "description": "get mmedicine by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a mmedicine entity by ID",
+                "operationId": "get-mmedicine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mmedicine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Mmedicine"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "update mmedicine by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update a mmedicine entity by ID",
+                "operationId": "update-mmedicine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mmedicine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Mmedicine entity",
+                        "name": "mmedicine",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ent.Mmedicine"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Mmedicine"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "get mmedicine by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete a mmedicine entity by ID",
+                "operationId": "delete-mmedicine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mmedicine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/patients": {
             "get": {
                 "description": "list patient entities",
@@ -1174,6 +1400,12 @@ var doc = `{
                 "doctor": {
                     "type": "integer"
                 },
+                "medicine": {
+                    "type": "integer"
+                },
+                "mmedicine": {
+                    "type": "integer"
+                },
                 "patient": {
                     "type": "integer"
                 },
@@ -1223,10 +1455,23 @@ var doc = `{
                     "description": "MedicineName holds the value of the \"Medicine_Name\" field.",
                     "type": "string"
                 },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "integer"
+                }
+            }
+        },
+        "ent.Mmedicine": {
+            "type": "object",
+            "properties": {
+                "Mmedicine_Name": {
+                    "description": "MmedicineName holds the value of the \"Mmedicine_Name\" field.",
+                    "type": "string"
+                },
                 "edges": {
-                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MedicineQuery when eager-loading is set.",
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MmedicineQuery when eager-loading is set.",
                     "type": "object",
-                    "$ref": "#/definitions/ent.MedicineEdges"
+                    "$ref": "#/definitions/ent.MmedicineEdges"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -1234,7 +1479,7 @@ var doc = `{
                 }
             }
         },
-        "ent.MedicineEdges": {
+        "ent.MmedicineEdges": {
             "type": "object",
             "properties": {
                 "prescriptions": {
@@ -1303,6 +1548,9 @@ var doc = `{
                     "description": "ID of the ent.",
                     "type": "integer"
                 },
+                "mmedicine_ID": {
+                    "type": "integer"
+                },
                 "patient_ID": {
                     "type": "integer"
                 },
@@ -1319,12 +1567,10 @@ var doc = `{
                     "type": "object",
                     "$ref": "#/definitions/ent.Doctor"
                 },
-                "medicines": {
-                    "description": "Medicines holds the value of the medicines edge.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ent.Medicine"
-                    }
+                "mmedicine": {
+                    "description": "Mmedicine holds the value of the mmedicine edge.",
+                    "type": "object",
+                    "$ref": "#/definitions/ent.Mmedicine"
                 },
                 "patient": {
                     "description": "Patient holds the value of the patient edge.",

@@ -16,8 +16,8 @@ const (
 	EdgeDoctor = "doctor"
 	// EdgeSystemmember holds the string denoting the systemmember edge name in mutations.
 	EdgeSystemmember = "systemmember"
-	// EdgeMedicines holds the string denoting the medicines edge name in mutations.
-	EdgeMedicines = "medicines"
+	// EdgeMmedicine holds the string denoting the mmedicine edge name in mutations.
+	EdgeMmedicine = "mmedicine"
 
 	// Table holds the table name of the prescription in the database.
 	Table = "prescriptions"
@@ -42,11 +42,13 @@ const (
 	SystemmemberInverseTable = "systemmembers"
 	// SystemmemberColumn is the table column denoting the systemmember relation/edge.
 	SystemmemberColumn = "Systemmember_ID"
-	// MedicinesTable is the table the holds the medicines relation/edge. The primary key declared below.
-	MedicinesTable = "prescription_medicines"
-	// MedicinesInverseTable is the table name for the Medicine entity.
-	// It exists in this package in order to avoid circular dependency with the "medicine" package.
-	MedicinesInverseTable = "medicines"
+	// MmedicineTable is the table the holds the mmedicine relation/edge.
+	MmedicineTable = "prescriptions"
+	// MmedicineInverseTable is the table name for the Mmedicine entity.
+	// It exists in this package in order to avoid circular dependency with the "mmedicine" package.
+	MmedicineInverseTable = "mmedicines"
+	// MmedicineColumn is the table column denoting the mmedicine relation/edge.
+	MmedicineColumn = "Mmedicine_ID"
 )
 
 // Columns holds all SQL columns for prescription fields.
@@ -58,12 +60,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the Prescription type.
 var ForeignKeys = []string{
 	"Doctor_ID",
+	"Mmedicine_ID",
 	"Patient_ID",
 	"Systemmember_ID",
 }
-
-var (
-	// MedicinesPrimaryKey and MedicinesColumn2 are the table columns denoting the
-	// primary key for the medicines relation (M2M).
-	MedicinesPrimaryKey = []string{"prescription_id", "medicine_id"}
-)

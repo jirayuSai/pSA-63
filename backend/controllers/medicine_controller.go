@@ -15,9 +15,6 @@ type MedicineController struct {
 	client *ent.Client
 	router gin.IRouter
 }
-type Medicine struct {
-	Prescription int
-}
 
 // CreateMedicine handles POST requests for adding medicine entities
 // @Summary Create medicine
@@ -48,17 +45,6 @@ func (ctl *MedicineController) CreateMedicine(c *gin.Context) {
 		})
 		return
 	}
-
-	//p, err := ctl.client.Prescription.
-	//	Query().
-	//	Where(prescription.IDEQ(int(obj.Prescription))).
-	//	Only(context.Background())
-	//if err != nil {
-	//	c.JSON(400, gin.H{
-	//		"error": "doctor not found",
-	//	})
-	//	return
-	//}
 
 	c.JSON(200, m)
 }

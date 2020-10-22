@@ -16,6 +16,7 @@ func (Patient) Fields() []ent.Field {
 	return []ent.Field{
 
 		field.String("Patient_Name").
+			Unique().
 			NotEmpty(),
 		field.String("Gender"),
 		field.Int("Patient_Phone").

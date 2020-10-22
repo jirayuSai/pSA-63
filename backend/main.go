@@ -20,6 +20,9 @@ type SystemMember struct {
 	SystemMemberName string
 	Password         string
 }
+type Prescriptions struct {
+	Prescription []Prescription
+}
 type Prescription struct {
 	PrescripID string
 }
@@ -43,6 +46,12 @@ type Doctors struct {
 type Doctor struct {
 	DoctorName  string
 	DoctorEmail string
+}
+type Mmedicines struct {
+	Mmedicine []Mmedicine
+}
+type Mmedicine struct {
+	MmedicineName string
 }
 
 // @title SUT SA Example API
@@ -103,8 +112,11 @@ func main() {
 	doctors := Doctors{
 		Doctor: []Doctor{
 			Doctor{"Jirayu Rattanawong", "b6113049@g.sut.ac.th"},
-			Doctor{"chan wit", "chanwit@gmail.com"},
-			Doctor{"wichat sre", "witchai@gmail.com"},
+			Doctor{"Roberts", "roberts@gmail.com"},
+			Doctor{"Taylor", "taylor@gmail.com"},
+			Doctor{"Martin", "Martin@g.sut.ac.th"},
+			Doctor{"Peretz", "Peretz@gmail.com"},
+			Doctor{"Stewart", "Stewart@gmail.com"},
 		},
 	}
 	for _, d := range doctors.Doctor {
@@ -115,10 +127,35 @@ func main() {
 			Save(context.Background())
 
 	}
+
+	//Set Mmedicine Data
+	mmedicines := Mmedicines{
+		Mmedicine: []Mmedicine{
+			Mmedicine{"ยาน้ำแก้ไอ"},
+			Mmedicine{"ยานอนหลับ"},
+			Mmedicine{"ยาขับเสมหะ"},
+			Mmedicine{"ยาแก้ปวด"},
+			Mmedicine{"ยาปฏิชีวนะ"},
+			Mmedicine{"ยาระบาย"},
+		},
+	}
+	for _, me := range mmedicines.Mmedicine {
+		client.Mmedicine.
+			Create().
+			SetMmedicineName(me.MmedicineName).
+			Save(context.Background())
+
+	}
+
 	//Set Doctor Data
 	patients := Patients{
 		Patient: []Patient{
-			Patient{"Ben ya", "female", 1234567890},
+			Patient{"Morgan", "female", 1234567890},
+			Patient{"Beckham", "male", 9876787809},
+			Patient{"Harris", "female", 5555555555},
+			Patient{"Gonzalez", "female", 9998652431},
+			Patient{"Jackson", "male", 9999999999},
+			Patient{"Nelson", "male", 5423676543},
 		},
 	}
 	for _, pt := range patients.Patient {
@@ -134,9 +171,12 @@ func main() {
 	//Set Medicine Data
 	medicines := Medicines{
 		Medicine: []Medicine{
-			Medicine{"M0001"},
-			Medicine{"M0002"},
-			Medicine{"M0003"},
+			Medicine{"M3"},
+			Medicine{"M2"},
+			Medicine{"M1"},
+			Medicine{"M4"},
+			Medicine{"M5"},
+			Medicine{"M6"},
 		},
 	}
 	for _, m := range medicines.Medicine {
@@ -149,7 +189,12 @@ func main() {
 	//Set Systemmember Data
 	systemMembers := SystemMembers{
 		SystemMember: []SystemMember{
-			SystemMember{"Ji soo", "12345678"},
+			SystemMember{"Edwards", "12345678"},
+			SystemMember{"Johnson", "32424242"},
+			SystemMember{"Bobby Kim", "11111111"},
+			SystemMember{"Rogers", "22222222"},
+			SystemMember{"Williams", "33333333"},
+			SystemMember{"Wilson", "44444444"},
 		},
 	}
 	for _, sm := range systemMembers.SystemMember {

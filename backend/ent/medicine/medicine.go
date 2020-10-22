@@ -10,16 +10,8 @@ const (
 	// FieldMedicineName holds the string denoting the medicine_name field in the database.
 	FieldMedicineName = "medicine_name"
 
-	// EdgePrescriptions holds the string denoting the prescriptions edge name in mutations.
-	EdgePrescriptions = "prescriptions"
-
 	// Table holds the table name of the medicine in the database.
 	Table = "medicines"
-	// PrescriptionsTable is the table the holds the prescriptions relation/edge. The primary key declared below.
-	PrescriptionsTable = "prescription_medicines"
-	// PrescriptionsInverseTable is the table name for the Prescription entity.
-	// It exists in this package in order to avoid circular dependency with the "prescription" package.
-	PrescriptionsInverseTable = "prescriptions"
 )
 
 // Columns holds all SQL columns for medicine fields.
@@ -27,12 +19,6 @@ var Columns = []string{
 	FieldID,
 	FieldMedicineName,
 }
-
-var (
-	// PrescriptionsPrimaryKey and PrescriptionsColumn2 are the table columns denoting the
-	// primary key for the prescriptions relation (M2M).
-	PrescriptionsPrimaryKey = []string{"prescription_id", "medicine_id"}
-)
 
 var (
 	// MedicineNameValidator is a validator for the "Medicine_Name" field. It is called by the builders before save.

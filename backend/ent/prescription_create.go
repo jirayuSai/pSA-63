@@ -11,7 +11,7 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/doctor"
-	"github.com/jirayuSai/app/ent/medicine"
+	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/prescription"
 	"github.com/jirayuSai/app/ent/systemmember"
@@ -87,19 +87,23 @@ func (pc *PrescriptionCreate) SetSystemmember(s *Systemmember) *PrescriptionCrea
 	return pc.SetSystemmemberID(s.ID)
 }
 
-// AddMedicineIDs adds the medicines edge to Medicine by ids.
-func (pc *PrescriptionCreate) AddMedicineIDs(ids ...int) *PrescriptionCreate {
-	pc.mutation.AddMedicineIDs(ids...)
+// SetMmedicineID sets the mmedicine edge to Mmedicine by id.
+func (pc *PrescriptionCreate) SetMmedicineID(id int) *PrescriptionCreate {
+	pc.mutation.SetMmedicineID(id)
 	return pc
 }
 
-// AddMedicines adds the medicines edges to Medicine.
-func (pc *PrescriptionCreate) AddMedicines(m ...*Medicine) *PrescriptionCreate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetNillableMmedicineID sets the mmedicine edge to Mmedicine by id if the given value is not nil.
+func (pc *PrescriptionCreate) SetNillableMmedicineID(id *int) *PrescriptionCreate {
+	if id != nil {
+		pc = pc.SetMmedicineID(*id)
 	}
-	return pc.AddMedicineIDs(ids...)
+	return pc
+}
+
+// SetMmedicine sets the mmedicine edge to Mmedicine.
+func (pc *PrescriptionCreate) SetMmedicine(m *Mmedicine) *PrescriptionCreate {
+	return pc.SetMmedicineID(m.ID)
 }
 
 // Mutation returns the PrescriptionMutation object of the builder.
@@ -237,17 +241,17 @@ func (pc *PrescriptionCreate) createSpec() (*Prescription, *sqlgraph.CreateSpec)
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.MedicinesIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.MmedicineIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   prescription.MedicinesTable,
-			Columns: prescription.MedicinesPrimaryKey,
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   prescription.MmedicineTable,
+			Columns: []string{prescription.MmedicineColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: medicine.FieldID,
+					Column: mmedicine.FieldID,
 				},
 			},
 		}

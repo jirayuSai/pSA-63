@@ -33,10 +33,22 @@ var (
 		PrimaryKey:  []*schema.Column{MedicinesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
+	// MmedicinesColumns holds the columns for the "mmedicines" table.
+	MmedicinesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "mmedicine_name", Type: field.TypeString, Unique: true},
+	}
+	// MmedicinesTable holds the schema information for the "mmedicines" table.
+	MmedicinesTable = &schema.Table{
+		Name:        "mmedicines",
+		Columns:     MmedicinesColumns,
+		PrimaryKey:  []*schema.Column{MmedicinesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// PatientsColumns holds the columns for the "patients" table.
 	PatientsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "patient_name", Type: field.TypeString},
+		{Name: "patient_name", Type: field.TypeString, Unique: true},
 		{Name: "gender", Type: field.TypeString},
 		{Name: "patient_phone", Type: field.TypeInt},
 	}
@@ -52,6 +64,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "datetime", Type: field.TypeTime},
 		{Name: "Doctor_ID", Type: field.TypeInt, Nullable: true},
+		{Name: "Mmedicine_ID", Type: field.TypeInt, Nullable: true},
 		{Name: "Patient_ID", Type: field.TypeInt, Nullable: true},
 		{Name: "Systemmember_ID", Type: field.TypeInt, Nullable: true},
 	}
@@ -69,15 +82,22 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:  "prescriptions_patients_prescriptions",
+				Symbol:  "prescriptions_mmedicines_prescriptions",
 				Columns: []*schema.Column{PrescriptionsColumns[3]},
+
+				RefColumns: []*schema.Column{MmedicinesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "prescriptions_patients_prescriptions",
+				Columns: []*schema.Column{PrescriptionsColumns[4]},
 
 				RefColumns: []*schema.Column{PatientsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:  "prescriptions_systemmembers_prescriptions",
-				Columns: []*schema.Column{PrescriptionsColumns[4]},
+				Columns: []*schema.Column{PrescriptionsColumns[5]},
 
 				RefColumns: []*schema.Column{SystemmembersColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -97,48 +117,20 @@ var (
 		PrimaryKey:  []*schema.Column{SystemmembersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
-	// PrescriptionMedicinesColumns holds the columns for the "prescription_medicines" table.
-	PrescriptionMedicinesColumns = []*schema.Column{
-		{Name: "prescription_id", Type: field.TypeInt},
-		{Name: "medicine_id", Type: field.TypeInt},
-	}
-	// PrescriptionMedicinesTable holds the schema information for the "prescription_medicines" table.
-	PrescriptionMedicinesTable = &schema.Table{
-		Name:       "prescription_medicines",
-		Columns:    PrescriptionMedicinesColumns,
-		PrimaryKey: []*schema.Column{PrescriptionMedicinesColumns[0], PrescriptionMedicinesColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:  "prescription_medicines_prescription_id",
-				Columns: []*schema.Column{PrescriptionMedicinesColumns[0]},
-
-				RefColumns: []*schema.Column{PrescriptionsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:  "prescription_medicines_medicine_id",
-				Columns: []*schema.Column{PrescriptionMedicinesColumns[1]},
-
-				RefColumns: []*schema.Column{MedicinesColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DoctorsTable,
 		MedicinesTable,
+		MmedicinesTable,
 		PatientsTable,
 		PrescriptionsTable,
 		SystemmembersTable,
-		PrescriptionMedicinesTable,
 	}
 )
 
 func init() {
 	PrescriptionsTable.ForeignKeys[0].RefTable = DoctorsTable
-	PrescriptionsTable.ForeignKeys[1].RefTable = PatientsTable
-	PrescriptionsTable.ForeignKeys[2].RefTable = SystemmembersTable
-	PrescriptionMedicinesTable.ForeignKeys[0].RefTable = PrescriptionsTable
-	PrescriptionMedicinesTable.ForeignKeys[1].RefTable = MedicinesTable
+	PrescriptionsTable.ForeignKeys[1].RefTable = MmedicinesTable
+	PrescriptionsTable.ForeignKeys[2].RefTable = PatientsTable
+	PrescriptionsTable.ForeignKeys[3].RefTable = SystemmembersTable
 }

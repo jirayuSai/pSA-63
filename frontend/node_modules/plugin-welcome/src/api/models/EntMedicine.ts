@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import {
-    EntMedicineEdges,
-    EntMedicineEdgesFromJSON,
-    EntMedicineEdgesFromJSONTyped,
-    EntMedicineEdgesToJSON,
-} from './';
-
 /**
  * 
  * @export
@@ -32,12 +25,6 @@ export interface EntMedicine {
      * @memberof EntMedicine
      */
     medicineName?: string;
-    /**
-     * 
-     * @type {EntMedicineEdges}
-     * @memberof EntMedicine
-     */
-    edges?: EntMedicineEdges;
     /**
      * ID of the ent.
      * @type {number}
@@ -57,7 +44,6 @@ export function EntMedicineFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'medicineName': !exists(json, 'Medicine_Name') ? undefined : json['Medicine_Name'],
-        'edges': !exists(json, 'edges') ? undefined : EntMedicineEdgesFromJSON(json['edges']),
         'id': !exists(json, 'id') ? undefined : json['id'],
     };
 }
@@ -72,7 +58,6 @@ export function EntMedicineToJSON(value?: EntMedicine | null): any {
     return {
         
         'Medicine_Name': value.medicineName,
-        'edges': EntMedicineEdgesToJSON(value.edges),
         'id': value.id,
     };
 }

@@ -34,6 +34,8 @@ func (Prescription) Edges() []ent.Edge {
 			Ref("prescriptions").
 			Unique(),
 
-		edge.To("medicines", Medicine.Type),
+		edge.From("mmedicine", Mmedicine.Type).
+			Ref("prescriptions").
+			Unique(),
 	}
 }

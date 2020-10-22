@@ -18,10 +18,10 @@ import {
     EntDoctorFromJSON,
     EntDoctorFromJSONTyped,
     EntDoctorToJSON,
-    EntMedicine,
-    EntMedicineFromJSON,
-    EntMedicineFromJSONTyped,
-    EntMedicineToJSON,
+    EntMmedicine,
+    EntMmedicineFromJSON,
+    EntMmedicineFromJSONTyped,
+    EntMmedicineToJSON,
     EntPatient,
     EntPatientFromJSON,
     EntPatientFromJSONTyped,
@@ -45,11 +45,11 @@ export interface EntPrescriptionEdges {
      */
     doctor?: EntDoctor;
     /**
-     * Medicines holds the value of the medicines edge.
-     * @type {Array<EntMedicine>}
+     * 
+     * @type {EntMmedicine}
      * @memberof EntPrescriptionEdges
      */
-    medicines?: Array<EntMedicine>;
+    mmedicine?: EntMmedicine;
     /**
      * 
      * @type {EntPatient}
@@ -75,7 +75,7 @@ export function EntPrescriptionEdgesFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'doctor': !exists(json, 'Doctor') ? undefined : EntDoctorFromJSON(json['Doctor']),
-        'medicines': !exists(json, 'Medicines') ? undefined : ((json['Medicines'] as Array<any>).map(EntMedicineFromJSON)),
+        'mmedicine': !exists(json, 'Mmedicine') ? undefined : EntMmedicineFromJSON(json['Mmedicine']),
         'patient': !exists(json, 'Patient') ? undefined : EntPatientFromJSON(json['Patient']),
         'systemmember': !exists(json, 'Systemmember') ? undefined : EntSystemmemberFromJSON(json['Systemmember']),
     };
@@ -91,7 +91,7 @@ export function EntPrescriptionEdgesToJSON(value?: EntPrescriptionEdges | null):
     return {
         
         'doctor': EntDoctorToJSON(value.doctor),
-        'medicines': value.medicines === undefined ? undefined : ((value.medicines as Array<any>).map(EntMedicineToJSON)),
+        'mmedicine': EntMmedicineToJSON(value.mmedicine),
         'patient': EntPatientToJSON(value.patient),
         'systemmember': EntSystemmemberToJSON(value.systemmember),
     };

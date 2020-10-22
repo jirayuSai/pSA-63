@@ -10,7 +10,6 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/medicine"
-	"github.com/jirayuSai/app/ent/prescription"
 )
 
 // MedicineCreate is the builder for creating a Medicine entity.
@@ -24,21 +23,6 @@ type MedicineCreate struct {
 func (mc *MedicineCreate) SetMedicineName(s string) *MedicineCreate {
 	mc.mutation.SetMedicineName(s)
 	return mc
-}
-
-// AddPrescriptionIDs adds the prescriptions edge to Prescription by ids.
-func (mc *MedicineCreate) AddPrescriptionIDs(ids ...int) *MedicineCreate {
-	mc.mutation.AddPrescriptionIDs(ids...)
-	return mc
-}
-
-// AddPrescriptions adds the prescriptions edges to Prescription.
-func (mc *MedicineCreate) AddPrescriptions(p ...*Prescription) *MedicineCreate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return mc.AddPrescriptionIDs(ids...)
 }
 
 // Mutation returns the MedicineMutation object of the builder.
@@ -123,25 +107,6 @@ func (mc *MedicineCreate) createSpec() (*Medicine, *sqlgraph.CreateSpec) {
 			Column: medicine.FieldMedicineName,
 		})
 		m.MedicineName = value
-	}
-	if nodes := mc.mutation.PrescriptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   medicine.PrescriptionsTable,
-			Columns: medicine.PrescriptionsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prescription.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return m, _spec
 }

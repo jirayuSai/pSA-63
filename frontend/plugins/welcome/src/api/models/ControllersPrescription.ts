@@ -36,6 +36,18 @@ export interface ControllersPrescription {
      * @type {number}
      * @memberof ControllersPrescription
      */
+    medicine?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ControllersPrescription
+     */
+    mmedicine?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ControllersPrescription
+     */
     patient?: number;
     /**
      * 
@@ -57,6 +69,8 @@ export function ControllersPrescriptionFromJSONTyped(json: any, ignoreDiscrimina
         
         'datetime': !exists(json, 'datetime') ? undefined : json['datetime'],
         'doctor': !exists(json, 'doctor') ? undefined : json['doctor'],
+        'medicine': !exists(json, 'medicine') ? undefined : json['medicine'],
+        'mmedicine': !exists(json, 'mmedicine') ? undefined : json['mmedicine'],
         'patient': !exists(json, 'patient') ? undefined : json['patient'],
         'systemmember': !exists(json, 'systemmember') ? undefined : json['systemmember'],
     };
@@ -73,6 +87,8 @@ export function ControllersPrescriptionToJSON(value?: ControllersPrescription | 
         
         'datetime': value.datetime,
         'doctor': value.doctor,
+        'medicine': value.medicine,
+        'mmedicine': value.mmedicine,
         'patient': value.patient,
         'systemmember': value.systemmember,
     };

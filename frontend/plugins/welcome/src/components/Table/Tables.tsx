@@ -44,11 +44,11 @@ const deletePrescription = async (id: number) => {
      <Table className={classes.table} aria-label="simple table">
        <TableHead>
          <TableRow>
-           <TableCell align="center">Prescriptions ID</TableCell>
-           <TableCell align="center">Doctor ID</TableCell>
-           <TableCell align="center">Patient ID</TableCell>
-           <TableCell align="center">Medicine ID</TableCell>
-           <TableCell align="center">Systemmeber ID</TableCell>
+           <TableCell align="center">รหัสใบบันทึกการจ่ายยา</TableCell>
+           <TableCell align="center">ชื่อแพทย์</TableCell>
+           <TableCell align="center">ชื่อผู้ป่วย</TableCell>
+           <TableCell align="center">รหัสยา</TableCell>
+           <TableCell align="center">ชื่อเภสัชกร</TableCell>
            <TableCell align="center">date</TableCell> 
          </TableRow>
        </TableHead>
@@ -58,11 +58,11 @@ const deletePrescription = async (id: number) => {
              <TableCell align="center">{item.id}</TableCell>
              <TableCell align="center">{item.edges?.doctor?.doctorName}</TableCell>
              <TableCell align="center">{item.edges?.patient?.patientName}</TableCell>
-             <TableCell align="center">{item.edges?.medicine?.id}</TableCell>
+             <TableCell align="center">{item.edges?.mmedicine?.id}</TableCell>
              <TableCell align="center">{item.edges?.systemmember?.systemmemberName}</TableCell>
              <TableCell align="center">{moment(item.datetime).format('DD/MM/YYYY  HH:mm')}</TableCell>
              <TableCell align="center">
-               <Button
+             <Button
                  onClick={() => {
                   deletePrescription(item.id);
                  }}

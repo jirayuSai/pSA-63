@@ -4,7 +4,6 @@ package medicine
 
 import (
 	"github.com/facebookincubator/ent/dialect/sql"
-	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/jirayuSai/app/ent/predicate"
 )
 
@@ -206,34 +205,6 @@ func MedicineNameEqualFold(v string) predicate.Medicine {
 func MedicineNameContainsFold(v string) predicate.Medicine {
 	return predicate.Medicine(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldMedicineName), v))
-	})
-}
-
-// HasPrescriptions applies the HasEdge predicate on the "prescriptions" edge.
-func HasPrescriptions() predicate.Medicine {
-	return predicate.Medicine(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PrescriptionsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PrescriptionsTable, PrescriptionsPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasPrescriptionsWith applies the HasEdge predicate on the "prescriptions" edge with a given conditions (other predicates).
-func HasPrescriptionsWith(preds ...predicate.Prescription) predicate.Medicine {
-	return predicate.Medicine(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PrescriptionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PrescriptionsTable, PrescriptionsPrimaryKey...),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Doctor       []ent.Hook
 	Medicine     []ent.Hook
+	Mmedicine    []ent.Hook
 	Patient      []ent.Hook
 	Prescription []ent.Hook
 	Systemmember []ent.Hook

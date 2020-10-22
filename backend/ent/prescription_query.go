@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -13,7 +12,7 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
 	"github.com/jirayuSai/app/ent/doctor"
-	"github.com/jirayuSai/app/ent/medicine"
+	"github.com/jirayuSai/app/ent/mmedicine"
 	"github.com/jirayuSai/app/ent/patient"
 	"github.com/jirayuSai/app/ent/predicate"
 	"github.com/jirayuSai/app/ent/prescription"
@@ -32,7 +31,7 @@ type PrescriptionQuery struct {
 	withPatient      *PatientQuery
 	withDoctor       *DoctorQuery
 	withSystemmember *SystemmemberQuery
-	withMedicines    *MedicineQuery
+	withMmedicine    *MmedicineQuery
 	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -117,17 +116,17 @@ func (pq *PrescriptionQuery) QuerySystemmember() *SystemmemberQuery {
 	return query
 }
 
-// QueryMedicines chains the current query on the medicines edge.
-func (pq *PrescriptionQuery) QueryMedicines() *MedicineQuery {
-	query := &MedicineQuery{config: pq.config}
+// QueryMmedicine chains the current query on the mmedicine edge.
+func (pq *PrescriptionQuery) QueryMmedicine() *MmedicineQuery {
+	query := &MmedicineQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(prescription.Table, prescription.FieldID, pq.sqlQuery()),
-			sqlgraph.To(medicine.Table, medicine.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, prescription.MedicinesTable, prescription.MedicinesPrimaryKey...),
+			sqlgraph.To(mmedicine.Table, mmedicine.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, prescription.MmedicineTable, prescription.MmedicineColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -347,14 +346,14 @@ func (pq *PrescriptionQuery) WithSystemmember(opts ...func(*SystemmemberQuery)) 
 	return pq
 }
 
-//  WithMedicines tells the query-builder to eager-loads the nodes that are connected to
-// the "medicines" edge. The optional arguments used to configure the query builder of the edge.
-func (pq *PrescriptionQuery) WithMedicines(opts ...func(*MedicineQuery)) *PrescriptionQuery {
-	query := &MedicineQuery{config: pq.config}
+//  WithMmedicine tells the query-builder to eager-loads the nodes that are connected to
+// the "mmedicine" edge. The optional arguments used to configure the query builder of the edge.
+func (pq *PrescriptionQuery) WithMmedicine(opts ...func(*MmedicineQuery)) *PrescriptionQuery {
+	query := &MmedicineQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withMedicines = query
+	pq.withMmedicine = query
 	return pq
 }
 
@@ -429,10 +428,10 @@ func (pq *PrescriptionQuery) sqlAll(ctx context.Context) ([]*Prescription, error
 			pq.withPatient != nil,
 			pq.withDoctor != nil,
 			pq.withSystemmember != nil,
-			pq.withMedicines != nil,
+			pq.withMmedicine != nil,
 		}
 	)
-	if pq.withPatient != nil || pq.withDoctor != nil || pq.withSystemmember != nil {
+	if pq.withPatient != nil || pq.withDoctor != nil || pq.withSystemmember != nil || pq.withMmedicine != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -537,65 +536,27 @@ func (pq *PrescriptionQuery) sqlAll(ctx context.Context) ([]*Prescription, error
 		}
 	}
 
-	if query := pq.withMedicines; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		ids := make(map[int]*Prescription, len(nodes))
-		for _, node := range nodes {
-			ids[node.ID] = node
-			fks = append(fks, node.ID)
+	if query := pq.withMmedicine; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Prescription)
+		for i := range nodes {
+			if fk := nodes[i].Mmedicine_ID; fk != nil {
+				ids = append(ids, *fk)
+				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			}
 		}
-		var (
-			edgeids []int
-			edges   = make(map[int][]*Prescription)
-		)
-		_spec := &sqlgraph.EdgeQuerySpec{
-			Edge: &sqlgraph.EdgeSpec{
-				Inverse: false,
-				Table:   prescription.MedicinesTable,
-				Columns: prescription.MedicinesPrimaryKey,
-			},
-			Predicate: func(s *sql.Selector) {
-				s.Where(sql.InValues(prescription.MedicinesPrimaryKey[0], fks...))
-			},
-
-			ScanValues: func() [2]interface{} {
-				return [2]interface{}{&sql.NullInt64{}, &sql.NullInt64{}}
-			},
-			Assign: func(out, in interface{}) error {
-				eout, ok := out.(*sql.NullInt64)
-				if !ok || eout == nil {
-					return fmt.Errorf("unexpected id value for edge-out")
-				}
-				ein, ok := in.(*sql.NullInt64)
-				if !ok || ein == nil {
-					return fmt.Errorf("unexpected id value for edge-in")
-				}
-				outValue := int(eout.Int64)
-				inValue := int(ein.Int64)
-				node, ok := ids[outValue]
-				if !ok {
-					return fmt.Errorf("unexpected node id in edges: %v", outValue)
-				}
-				edgeids = append(edgeids, inValue)
-				edges[inValue] = append(edges[inValue], node)
-				return nil
-			},
-		}
-		if err := sqlgraph.QueryEdges(ctx, pq.driver, _spec); err != nil {
-			return nil, fmt.Errorf(`query edges "medicines": %v`, err)
-		}
-		query.Where(medicine.IDIn(edgeids...))
+		query.Where(mmedicine.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := edges[n.ID]
+			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected "medicines" node returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "Mmedicine_ID" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Medicines = append(nodes[i].Edges.Medicines, n)
+				nodes[i].Edges.Mmedicine = n
 			}
 		}
 	}
